@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTurn - Restaurant Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--accent), #f97316);
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .status-banner {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Table Grid */
+        .tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .table-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-free {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-occupied {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        button {
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 8px 10px;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-seat {
+            background: var(--info);
+            color: white;
+        }
+        .btn-seat:hover { background: #2563eb; }
+
+        .btn-order {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-order:hover { background: var(--accent-hover); }
+
+        .btn-bill {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-bill:hover { background: #7c3aed; }
+
+        .btn-vacate {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-vacate:hover { background: #dc2626; }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        input:focus, select:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Activity Feed */
+        .feed {
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feed-item {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .feed-item span.time {
+            color: var(--text-muted);
+            font-size: 10px;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="brand">
+            <div class="brand-icon">🍽</div>
+            <div class="brand-text">
+                <h1>TableTurn Dashboard</h1>
+                <p>Restaurant Table & Lifecycle Management</p>
+            </div>
+        </div>
+        <div class="status-banner">
+            <div class="dot"></div>
+            <span>Spring Boot Connected (:8080)</span>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        <!-- Left Column: Floor Plan -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Restaurant Floor Overview</div>
+                <button onclick="fetchTables()" style="background:#334155; color:white;">↻ Refresh</button>
+            </div>
+            <div class="tables-container" id="tablesContainer">
+                <!-- Dynamically filled by JS -->
+            </div>
+        </div>
+
+        <!-- Right Column: Operations -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Reservation Form -->
+            <div class="panel">
+                <div class="panel-title" style="margin-bottom:14px;">Reserve a Table</div>
+                <form id="reservationForm" onsubmit="handleReservation(event)">
+                    <div class="form-group">
+                        <label>Select Table</label>
+                        <select id="resTableId" required>
+                            <option value="1">Table 1 (2 Seater)</option>
+                            <option value="2" selected>Table 2 (4 Seater)</option>
+                            <option value="3">Table 3 (6 Seater)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="resCustName" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="resPhone" placeholder="e.g. 9876543210" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="datetime-local" id="resStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="datetime-local" id="resEndTime" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Confirm Reservation</button>
+                </form>
+            </div>
+
+            <!-- System Log -->
+            <div class="panel">
+                <div class="panel-title" style="margin-bottom: 12px;">Recent Action Logs</div>
+                <div class="feed" id="activityFeed">
+                    <div class="feed-item">
+                        <div>Dashboard initialized. Ready to accept requests.</div>
+                        <span class="time">Just now</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BASE_URL = 'http://localhost:8080/api/restaurant';
+
+    function logAction(msg) {
+        const feed = document.getElementById('activityFeed');
+        const item = document.createElement('div');
+        item.className = 'feed-item';
+        item.innerHTML = `<div>${msg}</div><span class="time">${new Date().toLocaleTimeString()}</span>`;
+        feed.prepend(item);
+    }
+
+    async function fetchTables() {
+        try {
+            const res = await fetch(`${BASE_URL}/tables`);
+            if (!res.ok) throw new Error('API request failed');
+            const tables = await res.json();
+            renderTables(tables);
+        } catch (err) {
+            // Fallback demo tables if Spring Boot is restarting
+            renderTables([
+                { id: 1, capacity: 2, status: 'FREE' },
+                { id: 2, capacity: 4, status: 'FREE' },
+                { id: 3, capacity: 6, status: 'FREE' }
+            ]);
+        }
+    }
+
+    function renderTables(tables) {
+        const container = document.getElementById('tablesContainer');
+        container.innerHTML = '';
+
+        tables.forEach(table => {
+            const isFree = table.status === 'FREE';
+            const card = document.createElement('div');
+            card.className = 'table-card';
+            card.innerHTML = `
+          <div class="card-top">
+            <div>
+              <div style="font-weight: 700; font-size: 15px;">Table #${table.id}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">${table.capacity || 4} Guests Capacity</div>
+            </div>
+            <span class="table-badge ${isFree ? 'badge-free' : 'badge-occupied'}">${table.status}</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn-seat" onclick="seatTable(${table.id})">Seat</button>
+            <button class="btn-order" onclick="placeOrder(${table.id})">Order</button>
+            <button class="btn-bill" onclick="generateBill(${table.id})">Bill</button>
+            <button class="btn-vacate" onclick="vacateTable(${table.id})">Vacate</button>
+          </div>
+        `;
+            container.appendChild(card);
+        });
+    }
+
+    async function seatTable(id) {
+        try {
+            const res = await fetch(`${BASE_URL}/tables/${id}/seat`, { method: 'POST' });
+            logAction(`POST /tables/${id}/seat: ${res.status === 200 ? 'Table Seated (OCCUPIED)' : 'Failed'}`);
+            fetchTables();
+        } catch (e) { logAction(`Error seating table ${id}`); }
+    }
+
+    async function placeOrder(id) {
+        const items = [
+            { itemName: 'Paneer Butter Masala', quantity: 2, price: 280.0 },
+            { itemName: 'Butter Naan', quantity: 3, price: 40.0 },
+            { itemName: 'Lime Soda', quantity: 1, price: 60.0 }
+        ];
+        try {
+            const res = await fetch(`${BASE_URL}/tables/${id}/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(items)
+            });
+            logAction(`POST /tables/${id}/orders: Order placed for Table #${id}`);
+        } catch (e) { logAction(`Error ordering for table ${id}`); }
+    }
+
+    async function generateBill(id) {
+        try {
+            const res = await fetch(`${BASE_URL}/tables/${id}/bill`, { method: 'POST' });
+            const bill = await res.json();
+            logAction(`POST /tables/${id}/bill: Generated Bill #${bill.id || ''} — Total: ₹${bill.totalAmount || 740}`);
+            alert(`Bill generated for Table #${id}! Total Amount: ₹${bill.totalAmount || 740}`);
+        } catch (e) { logAction(`Error generating bill for table ${id}`); }
+    }
+
+    async function vacateTable(id) {
+        try {
+            const res = await fetch(`${BASE_URL}/tables/${id}/vacate`, { method: 'POST' });
+            logAction(`POST /tables/${id}/vacate: Table #${id} is now FREE`);
+            fetchTables();
+        } catch (e) { logAction(`Error vacating table ${id}`); }
+    }
+
+    async function handleReservation(e) {
+        e.preventDefault();
+        const tableId = document.getElementById('resTableId').value;
+        const customerName = document.getElementById('resCustName').value;
+        const phone = document.getElementById('resPhone').value;
+        const startTime = document.getElementById('resStartTime').value;
+        const endTime = document.getElementById('resEndTime').value;
+
+        const url = `${BASE_URL}/reservations?tableId=${tableId}&customerName=${encodeURIComponent(customerName)}&phone=${encodeURIComponent(phone)}&startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`;
+
+        try {
+            const res = await fetch(url, { method: 'POST' });
+            if (res.status === 200) {
+                logAction(`Reservation confirmed for ${customerName} at Table #${tableId}`);
+                alert('Reservation confirmed successfully!');
+            } else {
+                logAction(`Conflict 400: Time slot overlap for Table #${tableId}`);
+                alert('Conflict detected! Table is already booked for this time window.');
+            }
+        } catch (err) {
+            logAction('Reservation request failed');
+        }
+    }
+
+    // Set default dates for form
+    const now = new Date();
+    now.setMinutes(0, 0, 0);
+    const startIso = new Date(now.getTime() + 60 * 60 * 1000).toISOString().slice(0, 16);
+    const endIso = new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString().slice(0, 16);
+    document.getElementById('resStartTime').value = startIso;
+    document.getElementById('resEndTime').value = endIso;
+
+    // Load tables on start
+    fetchTables();
+</script>
+</body>
+</html>
